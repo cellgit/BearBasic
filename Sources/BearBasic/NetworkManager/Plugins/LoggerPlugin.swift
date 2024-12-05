@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Moya
+@preconcurrency import Moya
 
 private typealias PluginConfiguration = NetworkLoggerPlugin.Configuration
 private typealias PluginOptions = PluginConfiguration.LogOptions

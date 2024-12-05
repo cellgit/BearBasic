@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Moya
+@preconcurrency import Moya
 
 #if DEBUG
 public let plugins_bear: [PluginType] = [LoggerPlugin, FilterPlugin(), ErrorHandlerPlugin()]
