@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import Moya
 import SwiftData
+import CombineMoya
 
 
 public enum BusinessError: Error {
@@ -44,8 +45,8 @@ public extension AnyPublisher where Output == Response, Failure == MoyaError {
                 if let result = resultData as? [String: Any],
                    let data = result["data"] {
                     let jsonData = try JSONSerialization.data(withJSONObject: data)
-                    let decodedResult = try JSONDecoder().decode(T.self, from: jsonData)
-                    return Just(decodedResult)
+                    let decodedData = try JSONDecoder().decode(T.self, from: jsonData)
+                    return Just(decodedData)
                         .setFailureType(to: MoyaError.self)
                         .eraseToAnyPublisher()
                 } else {
