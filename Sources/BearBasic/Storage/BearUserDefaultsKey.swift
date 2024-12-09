@@ -10,10 +10,17 @@ import Foundation
 enum UserDefaultsKey {
     
     case token
+    case appId
+    
+    case uuid
     
     var key: String {
         switch self {
         case .token: return "bear_token"
+        case .appId: return "bear_app_id"
+        case .uuid: return "bear_uuid"
+            
+            
         }
     }
     

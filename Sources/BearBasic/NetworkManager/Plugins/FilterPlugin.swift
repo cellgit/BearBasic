@@ -8,6 +8,18 @@
 import Foundation
 import Moya
 
+#if os(iOS)
+import UIKit
+
+// 延迟属性，保证在主线程访问
+var isPad: Bool {
+    DispatchQueue.main.sync {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+}
+#else
+#endif
+
 extension String {
 #if canImport(Foundation)
 /// SwifterSwift: URL escaped string.
@@ -23,12 +35,59 @@ var urlEncoded: String {
 class FilterPlugin: PluginType {
     func prepare(_ request: URLRequest, target: any TargetType) -> URLRequest {
         var newRequest = request
-        newRequest.setValue("Content-Type", forHTTPHeaderField: "application/json".urlEncoded)
+//        newRequest.setValue("Content-Type", forHTTPHeaderField: "application/json".urlEncoded)
+        
+        newRequest.setValue("application/json".urlEncoded, forHTTPHeaderField: "Content-Type")
+        
         if let token = UserDefaultsManager.get(forKey: UserDefaultsKey.token.key, ofType: String.self) {
-            newRequest.setValue(token, forHTTPHeaderField: token)
+            newRequest.setValue(token, forHTTPHeaderField: "Authorization")
         }
+        
+        if let appId = UserDefaultsManager.get(forKey: UserDefaultsKey.appId.key, ofType: String.self) {
+            newRequest.setValue(appId, forHTTPHeaderField: "appId")
+        }
+        
+        if let uuid = UserDefaultsManager.get(forKey: UserDefaultsKey.uuid.key, ofType: String.self) {
+            newRequest.setValue(uuid, forHTTPHeaderField: "uuid")
+        }
+        
+        
+        // 获取平台信息
+        let platform = getPlatform()
+        // 获取 appVersion
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
+        // 获取 bundleId
+        let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+        
+        newRequest.setValue(platform, forHTTPHeaderField: "platform")
+        newRequest.setValue(appVersion, forHTTPHeaderField: "appVersion")
+        newRequest.setValue(bundleId, forHTTPHeaderField: "bundleId")
+        
+        newRequest.setValue("00000000-0000-0000-0000-000000000000", forHTTPHeaderField: "idfv")
+        newRequest.setValue("00000000-0000-0000-0000-000000000000", forHTTPHeaderField: "idfa")
+        
+        
         newRequest.timeoutInterval = 300
         return newRequest
     }
     
 }
+
+
+extension FilterPlugin {
+    func getPlatform() -> String {
+#if os(iOS)
+        if isPad {
+            return "iPadOS"
+        }
+        else {
+            return "iOS"
+        }
+#else
+        return "macOS"
+#endif
+    }
+}
+
+
+
