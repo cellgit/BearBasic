@@ -29,9 +29,13 @@ let LoggerPlugin: NetworkLoggerPlugin = {
         }
         
         switch identifierType {
+        case .request:
+            return "网络请求日志request: [\(date)] \(type)  ==== \(identifierType.rawValue): \(message)"
+        case .requestBody:
+            return "网络请求日志requestBody: [\(date)] \(type)  ==== \(identifierType.rawValue): \(message)"
         case .responseBody:
             //todo 打印需要去掉转义
-            return "网络请求日志: [\(date)] \(type)  \(identifierType.rawValue): \(message)"
+            return "网络请求日志responseBody: [\(date)] \(type)  ==== \(identifierType.rawValue): \(message)"
         default:
             return "网络请求日志: [\(date)] \(type) \(identifierType.rawValue): \(message)"
         }

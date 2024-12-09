@@ -35,9 +35,8 @@ var urlEncoded: String {
 class FilterPlugin: PluginType {
     func prepare(_ request: URLRequest, target: any TargetType) -> URLRequest {
         var newRequest = request
-//        newRequest.setValue("Content-Type", forHTTPHeaderField: "application/json".urlEncoded)
         
-        newRequest.setValue("application/json".urlEncoded, forHTTPHeaderField: "Content-Type")
+        newRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         if let token = UserDefaultsManager.get(forKey: UserDefaultsKey.token.key, ofType: String.self) {
             newRequest.setValue(token, forHTTPHeaderField: "Authorization")
@@ -49,6 +48,13 @@ class FilterPlugin: PluginType {
         
         if let uuid = UserDefaultsManager.get(forKey: UserDefaultsKey.uuid.key, ofType: String.self) {
             newRequest.setValue(uuid, forHTTPHeaderField: "uuid")
+            newRequest.setValue(uuid, forHTTPHeaderField: "idfv")
+            newRequest.setValue(uuid, forHTTPHeaderField: "idfa")
+        }
+        else {
+            newRequest.setValue("00000000-0000-0000-0000-000000000000", forHTTPHeaderField: "uuid")
+            newRequest.setValue("00000000-0000-0000-0000-000000000000", forHTTPHeaderField: "idfv")
+            newRequest.setValue("00000000-0000-0000-0000-000000000000", forHTTPHeaderField: "idfa")
         }
         
         
@@ -62,10 +68,8 @@ class FilterPlugin: PluginType {
         newRequest.setValue(platform, forHTTPHeaderField: "platform")
         newRequest.setValue(appVersion, forHTTPHeaderField: "appVersion")
         newRequest.setValue(bundleId, forHTTPHeaderField: "bundleId")
-        
-        newRequest.setValue("00000000-0000-0000-0000-000000000000", forHTTPHeaderField: "idfv")
-        newRequest.setValue("00000000-0000-0000-0000-000000000000", forHTTPHeaderField: "idfa")
-        
+        let systemVersion = getSystemVersion()
+        newRequest.setValue(systemVersion, forHTTPHeaderField: "systemVersion")
         
         newRequest.timeoutInterval = 300
         return newRequest
@@ -75,6 +79,17 @@ class FilterPlugin: PluginType {
 
 
 extension FilterPlugin {
+    
+    func getSystemVersion() -> String {
+#if os(iOS)
+        return "\(getPlatform()) \(ProcessInfo.processInfo.operatingSystemVersionString)"
+#elseif os(macOS)
+        return "macOS \(ProcessInfo.processInfo.operatingSystemVersionString)"
+#else
+        return "unknown"
+#endif
+    }
+    
     func getPlatform() -> String {
 #if os(iOS)
         if isPad {
