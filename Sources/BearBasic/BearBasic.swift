@@ -16,7 +16,12 @@ public class BearBasic {
     public func start(with appId: String, env: NetworkEnvironment.ApiEnvironment = .production, apiVersion: String = "v1") {
         
         /// 设置网络环境
+#if DEBUG
         NetworkEnvironment.shared.apiEnvironment = env
+#else
+//        NetworkEnvironment.shared.apiEnvironment = env
+#endif
+        
         /// 设置api版本
         NetworkEnvironment.shared.setApiVersion(apiVersion)
         

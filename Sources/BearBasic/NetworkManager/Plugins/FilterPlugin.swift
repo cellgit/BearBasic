@@ -84,7 +84,10 @@ extension FilterPlugin {
 #if os(iOS)
         return "\(getPlatform()) \(ProcessInfo.processInfo.operatingSystemVersionString)"
 #elseif os(macOS)
-        return "macOS \(ProcessInfo.processInfo.operatingSystemVersionString)"
+        
+        let system_version = "macOS \(ProcessInfo.processInfo.operatingSystemVersionString)"
+        debugPrint("system_version ========= \(system_version)")
+        return system_version
 #else
         return "unknown"
 #endif

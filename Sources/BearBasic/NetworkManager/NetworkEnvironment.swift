@@ -63,15 +63,6 @@ public class NetworkEnvironment {
         }
     }
     
-//    /// api版本
-//    public var apiVersion: String = "v1"
-//    
-//
-//    //必要构造函数
-//    init(apiEnvironment: ApiEnvironment) {
-//        self.apiEnvironment = apiEnvironment
-//    }
-    
     // API 版本，默认值为 "v1"
     public private(set) var apiVersion: String = "v1"
     
