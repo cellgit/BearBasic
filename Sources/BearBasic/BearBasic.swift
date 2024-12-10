@@ -12,7 +12,14 @@ public class BearBasic {
     
     /// 启动sdk,需要提前设置的参数,可以在这里设置
     /// - Parameter appId: appId
-    public func start(with appId: String) {
+    /// - Parameter env: 网络环境,默认production
+    public func start(with appId: String, env: NetworkEnvironment.ApiEnvironment = .production, apiVersion: String = "v1") {
+        
+        /// 设置网络环境
+        NetworkEnvironment.shared.apiEnvironment = env
+        /// 设置api版本
+        NetworkEnvironment.shared.setApiVersion(apiVersion)
+        
         /// 存储appId
         UserDefaultsManager.save(appId, forKey: UserDefaultsKey.appId.key)
         

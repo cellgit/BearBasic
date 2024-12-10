@@ -28,7 +28,7 @@ public extension BaseTargetType {
 // 定义共用的属性
 public extension BaseTargetType {
     var base: String {
-        return "https://api.test.beartranslate.com/api/v1"
+        return NetworkEnvironment.shared.apiDomain + "/api/" + NetworkEnvironment.shared.apiVersion
     }
     
     var commonHeaders: [String: String] {
