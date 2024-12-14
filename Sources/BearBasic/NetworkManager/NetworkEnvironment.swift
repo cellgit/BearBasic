@@ -23,6 +23,9 @@ public class NetworkEnvironment {
         case test
         //生产
         case production
+        
+        case local
+        
         #if DEBUG
         public var name: String {
             switch self {
@@ -30,6 +33,10 @@ public class NetworkEnvironment {
                 return "测试环境"
             case .production:
                 return "生产环境"
+                
+            case .local:
+                return "本地环境"
+                
             }
         }
         #endif
@@ -60,6 +67,8 @@ public class NetworkEnvironment {
             //测试
         case .test:
             return "https://api.test.beartranslate.com"
+        case .local:
+            return "http://192.168.0.101:3000"
         }
     }
     
