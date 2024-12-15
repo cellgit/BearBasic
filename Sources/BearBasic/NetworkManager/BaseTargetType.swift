@@ -72,6 +72,20 @@ public extension BaseTargetType {
     func jsonTask(parameters: [String: Any]) -> Task {
         return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
     }
+    
+    func urlTask(parameters: [String: Any]) -> Task {
+        return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
+    }
+    
+    func task(parameters: [String: Any], isBody: Bool = true) -> Task {
+        if isBody == false {
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
+        }
+        else {
+            return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
+        }
+    }
+    
 }
 
 // 默认情况下，所有的请求都假定使用这种方式传递参数
