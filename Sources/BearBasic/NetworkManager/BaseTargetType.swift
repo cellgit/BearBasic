@@ -7,6 +7,7 @@
 
 import Foundation
 import Moya
+import UniformTypeIdentifiers
 
 public protocol BaseTargetType: TargetType {
     var base: String { get }
@@ -85,6 +86,126 @@ public extension BaseTargetType {
             return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
         }
     }
+    
+}
+
+
+public extension BaseTargetType {
+    // 通用文件上传任务，支持附加文本参数
+    func uploadTask(fileURL: URL, fileName: String, additionalParameters: [String: String]? = nil) -> Task {
+        let fileData: Data
+        do {
+            fileData = try Data(contentsOf: fileURL)
+        } catch {
+            fatalError("无法读取文件: \(error.localizedDescription)")
+        }
+        
+        var multipartData: [MultipartFormData] = []
+        
+        // 自动确定 MIME 类型
+        let mimeType = UTType(filenameExtension: fileURL.pathExtension)?.identifier ?? "application/octet-stream"
+        
+        // 添加文件数据
+        let fileFormData = MultipartFormData(provider: .data(fileData),
+                                             name: "file",
+                                             fileName: fileName,
+                                             mimeType: mimeType)
+        multipartData.append(fileFormData)
+        
+        // 添加文本参数
+        if let parameters = additionalParameters {
+            for (key, value) in parameters {
+                let textFormData = MultipartFormData(provider: .data(value.data(using: .utf8) ?? Data()),
+                                                    name: key)
+                multipartData.append(textFormData)
+            }
+        }
+        
+        return .uploadMultipart(multipartData)
+    }
+    
+    // 通用文件上传任务
+    func uploadTask(fileURL: URL, fileName: String, mimeType: String) -> Task {
+        let fileData: Data
+        do {
+            fileData = try Data(contentsOf: fileURL)
+        } catch {
+            fatalError("无法读取文件: \(error.localizedDescription)")
+        }
+        
+        let multipartFormData = MultipartFormData(provider: .data(fileData),
+                                                  name: "file",
+                                                  fileName: fileName,
+                                                  mimeType: mimeType)
+        
+        return .uploadMultipart([multipartFormData])
+    }
+    
+    // 通用文件上传任务，支持附加文本参数, 实现灵活,可自由传递 `mimeType`
+    
+    func uploadTask(fileURL: URL, fileName: String, mimeType: String, additionalParameters: [String: String]? = nil) -> Task {
+        let fileData: Data
+        do {
+            fileData = try Data(contentsOf: fileURL)
+        } catch {
+            fatalError("无法读取文件: \(error.localizedDescription)")
+        }
+        
+        var multipartData: [MultipartFormData] = []
+        
+        // 添加文件数据
+        let fileFormData = MultipartFormData(provider: .data(fileData),
+                                             name: "file",
+                                             fileName: fileName,
+                                             mimeType: mimeType)
+        multipartData.append(fileFormData)
+        
+        // 添加文本参数
+        if let parameters = additionalParameters {
+            for (key, value) in parameters {
+                let textFormData = MultipartFormData(provider: .data(value.data(using: .utf8) ?? Data()),
+                                                     name: key)
+                multipartData.append(textFormData)
+            }
+        }
+        
+        return .uploadMultipart(multipartData)
+    }
+    
+    
+    /// 常见 `mimeType` 类型
+    /// - Parameter fileURL: 文件路径
+    /// - Returns: mimeType
+    private func determineMimeType(for fileURL: URL) -> String {
+        switch fileURL.pathExtension.lowercased() {
+        case "pdf": return "application/pdf"
+        case "doc": return "application/msword"
+        case "docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        case "xls": return "application/vnd.ms-excel"
+        case "xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        case "ppt": return "application/vnd.ms-powerpoint"
+        case "pptx": return "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        case "txt": return "text/plain"
+        case "json": return "application/json"
+        case "xml": return "application/xml"
+        case "csv": return "text/csv"
+        case "jpg", "jpeg": return "image/jpeg"
+        case "png": return "image/png"
+        case "gif": return "image/gif"
+        case "bmp": return "image/bmp"
+        case "svg": return "image/svg+xml"
+        case "mp3": return "audio/mpeg"
+        case "wav": return "audio/wav"
+        case "ogg": return "audio/ogg"
+        case "mp4": return "video/mp4"
+        case "zip": return "application/zip"
+        case "rar": return "application/x-rar-compressed"
+        case "7z": return "application/x-7z-compressed"
+        case "gz": return "application/gzip"
+        default: return "application/octet-stream" // 默认二进制类型
+        }
+    }
+    
     
 }
 
