@@ -16,16 +16,39 @@ public enum BusinessError: Error {
     case business(code: Int, message: String?)
 }
 
+
+
+//@MainActor let errorPlugin = ErrorHandlerPlugin()
+
 //内部错误
 public enum InsideError: Error {
     //服务器返回的格式不对,解析不到result和code字段
     case formatterError
 }
 
+
+func sendError(response: Response) {
+    // 错误处理
+    if let json = try? response.mapJSON() as? [String: Any] {
+        let resultData = json["result"]
+        if let result = resultData as? [String: Any],
+           let code = result["code"] as? Int {
+            
+            let message = result["message"] as? String ?? "Unknown error"
+            // 发送到插件
+            ErrorHandlerPlugin().dealError(code: code, message: message)
+        }
+    }
+    
+}
+
 public extension AnyPublisher where Output == Response, Failure == MoyaError {
     
     func mapResult<T: Decodable>() -> AnyPublisher<T, MoyaError> {
         self.flatMap { response -> AnyPublisher<T, MoyaError> in
+            
+            sendError(response: response)
+            
             // 尝试解析JSON数据
             guard let json = try? response.mapJSON() as? [String: Any],
                   let statusCode = json["status_code"] as? Int else {

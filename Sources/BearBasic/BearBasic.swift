@@ -9,6 +9,9 @@ public class BearBasic {
     
     @MainActor public static let shared = BearBasic.init()
     
+    @AppStorage(BearUserDefaultsKey.uuid.key) var uuidStorage: String = ""
+    @AppStorage(BearUserDefaultsKey.appId.key) var appIdStorage: String = ""
+    
     
     /// 启动sdk,需要提前设置的参数,可以在这里设置
     /// - Parameter appId: appId
@@ -24,19 +27,25 @@ public class BearBasic {
         
         /// 设置api版本
         NetworkEnvironment.shared.setApiVersion(apiVersion)
+        appIdStorage = appId
+        uuidStorage = UUID().uuidString
+        
+        
+        
         
         /// 存储appId
-        UserDefaultsManager.save(appId, forKey: UserDefaultsKey.appId.key)
+//        UserDefaultsManager.save(appId, forKey: UserDefaultsKey.appId.key)
         
         // 生成 UUID
-        let uuid = UUID().uuidString
-        UserDefaultsManager.save(uuid, forKey: UserDefaultsKey.uuid.key)
+//        let uuid = UUID().uuidString
+//        UserDefaultsManager.save(uuid, forKey: UserDefaultsKey.uuid.key)
+        
 
     }
     
-    public func getAppId() -> String? {
-        UserDefaultsManager.get(forKey: UserDefaultsKey.appId.key, ofType: String.self)
-    }
+//    public func getAppId() -> String? {
+//        UserDefaultsManager.get(forKey: UserDefaultsKey.appId.key, ofType: String.self)
+//    }
 
     
 }

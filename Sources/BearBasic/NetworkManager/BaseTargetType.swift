@@ -8,6 +8,7 @@
 import Foundation
 import Moya
 import UniformTypeIdentifiers
+import SwiftUI
 
 public protocol BaseTargetType: TargetType {
     var base: String { get }
@@ -33,7 +34,7 @@ public extension BaseTargetType {
     }
     
     var commonHeaders: [String: String] {
-        if let token = UserDefaultsManager.get(forKey: UserDefaultsKey.token.key, ofType: String.self) {
+        if let token = UserDefaultsManager.get(forKey: BearUserDefaultsKey.token.key, ofType: String.self) {
             return [
                 "Content-Type": "application/json",
                 "Authorization": token
@@ -53,7 +54,7 @@ public extension BaseTargetType {
     }
     
     var formDataHeaders: [String: String] {
-        if let token = UserDefaultsManager.get(forKey: UserDefaultsKey.token.key, ofType: String.self) {
+        if let token = UserDefaultsManager.get(forKey: BearUserDefaultsKey.token.key, ofType: String.self) {
             return [
                 "Content-Type": "multipart/form-data",
                 "Authorization": token

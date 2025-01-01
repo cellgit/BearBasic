@@ -7,21 +7,16 @@
 
 import Foundation
 
-enum UserDefaultsKey {
+/// BearUserDefaultsKey,外部获取和存取`appId`, `token`, `isLogin`这些值必须使用这些key
+public enum BearUserDefaultsKey: String {
     
-    case token
     case appId
-    
+    case token
+    case isLogin
     case uuid
     
-    var key: String {
-        switch self {
-        case .token: return "bear_token"
-        case .appId: return "bear_app_id"
-        case .uuid: return "bear_uuid"
-            
-            
-        }
+    public var key: String {
+        self.rawValue
     }
     
 }
