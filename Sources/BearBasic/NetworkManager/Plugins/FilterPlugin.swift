@@ -41,35 +41,9 @@ class FilterPlugin: PluginType {
     
     func prepare(_ request: URLRequest, target: any TargetType) -> URLRequest {
         var newRequest = request
-        
-        newRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        
         newRequest.setValue(tokenStorage, forHTTPHeaderField: "Authorization")
         newRequest.setValue(appIdStorage, forHTTPHeaderField: "appId")
         newRequest.setValue(uuidStorage, forHTTPHeaderField: "uuid")
-        
-//        if let token = UserDefaultsManager.get(forKey: UserDefaultsKey.token.key, ofType: String.self) {
-//            newRequest.setValue(token, forHTTPHeaderField: "Authorization")
-//        }
-        
-//        if let appId = UserDefaultsManager.get(forKey: UserDefaultsKey.appId.key, ofType: String.self) {
-//            newRequest.setValue(appId, forHTTPHeaderField: "appId")
-//        }
-        
-        
-//        if let uuid = UserDefaultsManager.get(forKey: UserDefaultsKey.uuid.key, ofType: String.self) {
-//            newRequest.setValue(uuid, forHTTPHeaderField: "uuid")
-//            newRequest.setValue(uuid, forHTTPHeaderField: "idfv")
-//            newRequest.setValue(uuid, forHTTPHeaderField: "idfa")
-//        }
-//        else {
-//            newRequest.setValue("00000000-0000-0000-0000-000000000000", forHTTPHeaderField: "uuid")
-//            newRequest.setValue("00000000-0000-0000-0000-000000000000", forHTTPHeaderField: "idfv")
-//            newRequest.setValue("00000000-0000-0000-0000-000000000000", forHTTPHeaderField: "idfa")
-//        }
-        
-        
         // 获取平台信息
         let platform = getPlatform()
         // 获取 appVersion

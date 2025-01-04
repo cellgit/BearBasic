@@ -92,67 +92,6 @@ public extension BaseTargetType {
 
 
 public extension BaseTargetType {
-    // 通用文件上传任务，支持附加文本参数
-    func uploadTask(fileURL: URL, fileName: String, additionalParameters: [String: Any]? = nil) -> Task {
-        let fileData: Data
-        do {
-            fileData = try Data(contentsOf: fileURL)
-        } catch {
-            fatalError("无法读取文件: \(error.localizedDescription)")
-        }
-        
-        var multipartData: [MultipartFormData] = []
-        
-        // 自动确定 MIME 类型
-        let mimeType = UTType(filenameExtension: fileURL.pathExtension)?.identifier ?? "application/octet-stream"
-        
-        // 添加文件数据
-        let fileFormData = MultipartFormData(provider: .data(fileData),
-                                             name: "file",
-                                             fileName: fileName,
-                                             mimeType: mimeType)
-        multipartData.append(fileFormData)
-        
-//        // 添加文本参数
-//        if let parameters = additionalParameters {
-//            for (key, value) in parameters {
-//                let textFormData = MultipartFormData(provider: .data(value.data(using: .utf8) ?? Data()),
-//                                                    name: key)
-//                multipartData.append(textFormData)
-//            }
-//        }
-        
-        if let parameters = additionalParameters {
-            for (key, value) in parameters {
-                // 转换不同类型的 value 为 Data
-                let valueString: String
-                if let stringValue = value as? String {
-                    valueString = stringValue
-                } else if let intValue = value as? Int {
-                    valueString = "\(intValue)" // 将 Int 转为 String
-                } else if let boolValue = value as? Bool {
-                    valueString = boolValue ? "true" : "false" // 将 Bool 转为 String
-                } else {
-                    print("Unsupported value type for key \(key): \(type(of: value))")
-                    continue
-                }
-                
-                // 将 String 转为 Data，并创建 MultipartFormData
-                if let data = valueString.data(using: .utf8) {
-                    let textFormData = MultipartFormData(
-                        provider: .data(data),
-                        name: key
-                    )
-                    multipartData.append(textFormData)
-                } else {
-                    print("Failed to encode value for key \(key) to Data.")
-                }
-            }
-        }
-        
-        return .uploadMultipart(multipartData)
-    }
-    
     // 通用文件上传任务
     func uploadTask(fileURL: URL, fileName: String, mimeType: String) -> Task {
         let fileData: Data
@@ -172,7 +111,7 @@ public extension BaseTargetType {
     
     // 通用文件上传任务，支持附加文本参数, 实现灵活,可自由传递 `mimeType`
     
-    func uploadTask(fileURL: URL, fileName: String, mimeType: String, additionalParameters: [String: Any]? = nil) -> Task {
+    func uploadTask(fileURL: URL, fileName: String, mimeType: String? = nil, additionalParameters: [String: Any]? = nil) -> Task {
         let fileData: Data
         do {
             fileData = try Data(contentsOf: fileURL)
@@ -182,21 +121,18 @@ public extension BaseTargetType {
         
         var multipartData: [MultipartFormData] = []
         
+        var mimeType = mimeType
+        
+        if mimeType == nil {
+            mimeType = determineMimeType(for: fileURL)
+        }
+        
         // 添加文件数据
         let fileFormData = MultipartFormData(provider: .data(fileData),
                                              name: "file",
                                              fileName: fileName,
                                              mimeType: mimeType)
         multipartData.append(fileFormData)
-        
-        // 添加文本参数
-//        if let parameters = additionalParameters {
-//            for (key, value) in parameters {
-//                let textFormData = MultipartFormData(provider: .data(value.data(using: .utf8) ?? Data()),
-//                                                     name: key)
-//                multipartData.append(textFormData)
-//            }
-//        }
         
         if let parameters = additionalParameters {
             for (key, value) in parameters {
@@ -225,8 +161,6 @@ public extension BaseTargetType {
                 }
             }
         }
-
-        
         return .uploadMultipart(multipartData)
     }
     
@@ -274,3 +208,13 @@ public extension BaseTargetType {
     }
 }
 
+
+
+//        // 添加文本参数
+//        if let parameters = additionalParameters {
+//            for (key, value) in parameters {
+//                let textFormData = MultipartFormData(provider: .data(value.data(using: .utf8) ?? Data()),
+//                                                    name: key)
+//                multipartData.append(textFormData)
+//            }
+//        }

@@ -68,7 +68,7 @@ public class NetworkEnvironment {
         case .test:
             return "https://api.test.beartranslate.com"
         case .local:
-            return "http://192.168.0.101:3000"
+            return "http://localhost:3000"
         }
     }
     
