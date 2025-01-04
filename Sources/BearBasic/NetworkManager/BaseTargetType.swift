@@ -111,7 +111,7 @@ public extension BaseTargetType {
     
     // 通用文件上传任务，支持附加文本参数, 实现灵活,可自由传递 `mimeType`
     
-    func uploadTask(fileURL: URL, fileName: String, mimeType: String? = nil, additionalParameters: [String: Any]? = nil) -> Task {
+    func uploadTask(fileURL: URL, mimeType: String? = nil, additionalParameters: [String: Any]? = nil) -> Task {
         let fileData: Data
         do {
             fileData = try Data(contentsOf: fileURL)
@@ -126,6 +126,11 @@ public extension BaseTargetType {
         if mimeType == nil {
             mimeType = determineMimeType(for: fileURL)
         }
+//        let fileName = fileURL.lastPathComponent // 这样就保留了 .pdf 后缀
+        
+        // **阿里云 OSS 存储 UUID 文件名**
+        let fileExtension = fileURL.pathExtension
+        let fileName = "\(UUID().uuidString).\(fileExtension)" // 确保文件后缀保留
         
         // 添加文件数据
         let fileFormData = MultipartFormData(provider: .data(fileData),
@@ -218,3 +223,11 @@ public extension BaseTargetType {
 //                multipartData.append(textFormData)
 //            }
 //        }
+
+
+extension String {
+    /// 使用 Base64 进行文件名编码，确保安全性
+    func toBase64Filename() -> String {
+        return Data(self.utf8).base64EncodedString()
+    }
+}
