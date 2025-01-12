@@ -88,6 +88,9 @@ class ErrorHandlerPlugin: PluginType {
             break
         case 300:
             debugPrint("Error Code is 300, 错误信息: \(message)")
+        case 401:
+            debugPrint("Error Code is 401, 错误信息: \(message)")
+            logout()
         case 404:
             debugPrint("Error Code is 404, 错误信息: \(message)")
         case 500:
@@ -105,6 +108,7 @@ class ErrorHandlerPlugin: PluginType {
         case 1003:
             // 无效的凭证
             debugPrint("Error Code is 1003, 错误信息: \(message)")
+            logout()
             break
         case 1004:
             // 未授权
