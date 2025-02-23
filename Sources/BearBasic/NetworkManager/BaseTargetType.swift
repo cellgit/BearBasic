@@ -126,6 +126,7 @@ public extension BaseTargetType {
         if mimeType == nil {
             mimeType = determineMimeType(for: fileURL)
         }
+        debugPrint("mimeType ======= \(mimeType)")
 //        let fileName = fileURL.lastPathComponent // 这样就保留了 .pdf 后缀
         
         // **阿里云 OSS 存储 UUID 文件名**
@@ -195,6 +196,9 @@ public extension BaseTargetType {
         case "wav": return "audio/wav"
         case "ogg": return "audio/ogg"
         case "mp4": return "video/mp4"
+        case "aac": return "audio/aac"
+        case "flac": return "audio/flac"
+        case "m4a": return "audio/mp4"
         case "zip": return "application/zip"
         case "rar": return "application/x-rar-compressed"
         case "7z": return "application/x-7z-compressed"

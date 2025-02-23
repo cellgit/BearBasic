@@ -97,6 +97,14 @@ class ErrorHandlerPlugin: PluginType {
             //系统错误
             debugPrint("Error Code is 500, 错误信息: \(message)")
             break
+        case 1001:
+            // 用户不存在
+            debugPrint("Error Code is 1001, 错误信息: \(message)")
+            
+            // 退出登录,用户偏好清除bearer token, isLogin变为false
+            logout()
+            
+            break
         case 1002:
             // 用户不存在
             debugPrint("Error Code is 1002, 错误信息: \(message)")
