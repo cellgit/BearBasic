@@ -29,6 +29,13 @@ public class BearBasic {
         NetworkEnvironment.shared.setApiVersion(apiVersion)
         appIdStorage = appId
         uuidStorage = UUID().uuidString
+
+#if os(iOS)
+        /// 设备类型在这里（主线程）种一次缓存。
+        /// 请求拦截器跑在 Alamofire 的队列上，读它时绝不能再回主线程等——
+        /// 那会和「在主线程上发起请求」成环，把 App 冻死。详见 `isPad`。
+        seedDeviceIdiomCacheIfNeeded()
+#endif
         
         
         
