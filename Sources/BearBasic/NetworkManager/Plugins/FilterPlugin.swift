@@ -12,12 +12,23 @@ import SwiftUI
 #if os(iOS)
 import UIKit
 
-// 延迟属性，保证在主线程访问
-var isPad: Bool {
-    DispatchQueue.main.sync {
-        UIDevice.current.userInterfaceIdiom == .pad
-    }
-}
+/// 设备是不是 iPad。
+///
+/// **绝不能在这里 `DispatchQueue.main.sync`。**
+///
+/// 这个值会被下面的 `FilterPlugin.prepare` 读到，而 `prepare` 是 Moya 的请求
+/// 拦截器，跑在 Alamofire 的 request queue 上；同时 Moya 的 `sendRequest`
+/// 会从调用方线程 `sync` 到那条 request queue 上去建请求。于是只要有任何一个
+/// 请求是在主线程上发起的，两条路就成环：
+///
+///     主线程 ──等──▶ request queue ──等(main.sync)──▶ 主线程
+///
+/// 两边都不放手，整个 App 冻死，最后被 watchdog 杀掉——在用户那儿表现为崩溃。
+/// 2026-09-09 在 gkzt 上实锤过：连着打几个点就必现。
+///
+/// `userInterfaceIdiom` 是进程起来之后就不再变的常量，用全局 `let` 缓存一次，
+/// 任何线程直接读，永不阻塞。
+let isPad: Bool = UIDevice.current.userInterfaceIdiom == .pad
 #else
 #endif
 
